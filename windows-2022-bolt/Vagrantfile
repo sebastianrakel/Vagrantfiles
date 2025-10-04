@@ -14,7 +14,10 @@ choco install ruby
 
 choco install msys2
 
-Update-SessionEnvironment
+# import chocolatey helpers to make refreshenv available in powershell
+# copied from https://github.com/actions/runner-images/discussions/6065
+Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
+refreshenv
 
 ridk install 3
 
