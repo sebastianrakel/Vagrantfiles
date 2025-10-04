@@ -1,45 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-windows_provision = <<SCRIPT
-choco feature enable -n allowGlobalConfirmation
-
-$env:ChocolateyBinRoot="C:\tools"
-
-Write-Host "Installing git"
-choco install git
-
-Write-Host "Installing ruby"
-choco install ruby
-
-choco install msys2
-
-Update-SessionEnvironment
-
-ridk install 3
-
-Write-Host "Cloning Repo"
-cd C:/
-
-& 'C:/Program Files/Git/cmd/git.exe' clone https://github.com/openvoxproject/openvox-bolt.git
-
-cd openvox-bolt
-bundle install --path vendor
-
-$env:BOLT_WINRM_USER = "roddypiper"
-$env:BOLT_WINRM_HOST = "localhost"
-$env:BOLT_WINRM_PORT = 5985
-$env:BOLT_WINRM_SSL_PORT = 5986
-$env:BOLT_WINRM_SMB_PORT = 445
-
-bundle exec r10k puppetfile install
-
-. scripts\ci.ps1
-Set-ActiveRubyFromPuppet
-
-
-SCRIPT
-
 Vagrant.configure("2") do |config|
   config.vm.box = "jborean93/WindowsServer2022"
 
@@ -47,5 +8,8 @@ Vagrant.configure("2") do |config|
     domain.memory = 16384
     domain.cpus = 8
   end
-  config.vm.provision "shell", privileged: true, inline: windows_provision
+  config.vm.provision "shell", privileged: true, path: "scripts/install-tools.ps1"
+  config.vm.provision "shell", privileged: true, path: "scripts/install-ruby-dev.ps1"
+  config.vm.provision "shell", path: "scripts/register_ssh_known_hosts.ps1"
+  config.vm.provision "shell", path: "scripts/prepare-openbolt.ps1"
 end
