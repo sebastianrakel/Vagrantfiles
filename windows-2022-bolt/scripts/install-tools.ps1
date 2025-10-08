@@ -4,9 +4,9 @@ function InstallIfNotExists-Program {
         [string]$ProgramName
     )
 	
-    if (-Not (choco list --lo -r -e $ProgamName)) {
+    if (-Not (choco list --lo -r -e $ProgramName)) {
 	Write-Host "Install $ProgramName"
-	choco install $ProgamName
+	choco install $ProgramName
     } else {
 	Write-Host "Already installed $ProgramName"
     }
